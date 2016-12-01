@@ -1,5 +1,6 @@
 var CANVAS_WIDTH = 480;
 var CANVAS_HEIGHT = 320;
+var score = 0;
 
 var canvasElement = $("<canvas width ='" + CANVAS_WIDTH + "' height='" + CANVAS_HEIGHT +"'></canvas>");
 var canvas = canvasElement.get(0).getContext("2d");
@@ -11,15 +12,33 @@ setInterval(function(){
 	draw();
 }, 1000/FPS);
 
+function gameOver(){
+	canvas.textAlign = "center";
+	canvas.font = "30px Verdana"; 
+	canvas.fillText("GAME OVER", CANVAS_WIDTH/2, CANVAS_HEIGHT/2);
+	canvas.fillText(score, CANVAS_WIDTH/2, CANVAS_HEIGHT/2 + 60);
+	canvas.fillText("Press 'r' to restart", CANVAS_WIDTH/2, CANVAS_HEIGHT/2 + 90);
+	canvas.restore();
+	playerBullets.forEach(function(bullet){
+		bullet.active = false;
+	})
+}
+
+$(document).on("keydown", function(event){
+	if(event.which === 82){
+		location.reload();
+	}
+})
+
 function update(){
-	if(keydown.space){
+	if(keydown.space && player.active){
 		player.shoot();
 	}
-	if(keydown.left && player.x > 0){
+	if(keydown.left && player.x > 0 && player.active){
 		player.x -= 5;
 	}
 
-	if(keydown.right && player.x < CANVAS_WIDTH - player.width){
+	if(keydown.right && player.x < CANVAS_WIDTH - player.width && player.active){
 		player.x += 5;
 	}
 
@@ -35,18 +54,29 @@ function update(){
 		enemy.update();
 	});
 
+	oldEnemies = enemies.filter(function(enemy){
+		return enemy.exploded;
+	})
+
+	score += oldEnemies.length;
+
 	enemies = enemies.filter(function(enemy){
 		return enemy.active;
 	});
 
+
+
 	if(Math.random() < 0.1) {
 		enemies.push(Enemy());
 	}
+
+	handleCollisions();
 };
 
 function draw(){
 	canvas.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
 	player.draw();
+	drawScore();
 	playerBullets.forEach(function(bullet){
 		bullet.draw();
 	})
@@ -55,12 +85,37 @@ function draw(){
 	})
 };
 
+function drawScore(){
+	canvas.font = "20px Verdana";
+	canvas.fillText(score, 10, 20);
+	canvas.restore();
+}
+
 function collides(a, b){
 	return a.x < b.x + b.width && a.x + a.width > b.x && a.y < b.y + b.height && a.y + a.width > b.y;
 }
 
+function handleCollisions(){
+	playerBullets.forEach(function(bullet){
+		enemies.forEach(function(enemy){
+			if(collides(bullet, enemy)){
+				enemy.explode();
+				bullet.active = false;
+			}
+		})
+	})
+
+	enemies.forEach(function(enemy){
+		if(collides(enemy, player)){
+			player.explode();
+			enemy.explode();
+		}
+	})
+}
+
 var playerBullets = [];
 var enemies = [];
+var oldEnemies = [];
 
 function Bullet(I){
 	I.active = true;
@@ -93,6 +148,7 @@ function Enemy(I){
 	I = I || {};
 
 	I.active = true;
+	I.exploded = false;
 	I.age = Math.floor(Math.random() * 128);
 
 	I.color = "#A2B";
@@ -114,6 +170,11 @@ function Enemy(I){
         	canvas.drawImage(Vader, this.x, this.y, this.width, this.height);
 	}
 
+	I.explode = function(){
+		I.active = false;
+		I.exploded = true;
+	}
+
 	I.update = function(){
 		I.x += I.xVelocity;
 		I.y += I.yVelocity;
@@ -124,16 +185,21 @@ function Enemy(I){
 	return I;
 }
 
-var player = {
+var player ={
 	color: "#00a",
 	x: 220,
 	y: 270,
 	width: 32,
 	height: 32,
+	active: true,
 	draw: function(){
 		//canvas.fillStyle = this.color;
 		//canvas.fillRect(this.x, this.y, this.width, this.height);
-		canvas.drawImage(ship, this.x, this.y, this.width, this.height);
+		if(this.active){
+			canvas.drawImage(ship, this.x, this.y, this.width, this.height);
+		}else{
+			gameOver();
+		}
 	},
 	 shoot: function(){
 	 	var bulletPosition = this.midpoint();
@@ -150,5 +216,11 @@ var player = {
 	 		x: this.x + this.width/2,
 	 		y: this.y + this.height/2
 	 	}
+	 },
+
+	 explode: function(){
+	 	player.active = false;
+	 	player.x = null;
+	 	player.y = null;
 	 }
 };
