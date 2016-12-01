@@ -1,3 +1,11 @@
 canvas{
 	background: #ccc;
 }
+
+#Vader{
+	display: none;
+}
+
+#ship{
+	display: none;
+}

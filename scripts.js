@@ -55,6 +55,10 @@ function draw(){
 	})
 };
 
+function collides(a, b){
+	return a.x < b.x + b.width && a.x + a.width > b.x && a.y < b.y + b.height && a.y + a.width > b.y;
+}
+
 var playerBullets = [];
 var enemies = [];
 
@@ -105,8 +109,9 @@ function Enemy(I){
 	}
 
 	I.draw = function(){
-		canvas.fillStyle = this.color;
-		canvas.fillRect(this.x, this.y, this.width, this.height);
+		//canvas.fillStyle = this.color;
+		//canvas.fillRect(this.x, this.y, this.width, this.height);
+        	canvas.drawImage(Vader, this.x, this.y, this.width, this.height);
 	}
 
 	I.update = function(){
@@ -126,8 +131,9 @@ var player = {
 	width: 32,
 	height: 32,
 	draw: function(){
-		canvas.fillStyle = this.color;
-		canvas.fillRect(this.x, this.y, this.width, this.height);
+		//canvas.fillStyle = this.color;
+		//canvas.fillRect(this.x, this.y, this.width, this.height);
+		canvas.drawImage(ship, this.x, this.y, this.width, this.height);
 	},
 	 shoot: function(){
 	 	var bulletPosition = this.midpoint();
