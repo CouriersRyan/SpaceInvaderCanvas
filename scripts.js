@@ -58,7 +58,7 @@ function update(){
 		return enemy.exploded;
 	})
 
-	score += oldEnemies.length
+	score += oldEnemies.length;
 
 	enemies = enemies.filter(function(enemy){
 		return enemy.active;
