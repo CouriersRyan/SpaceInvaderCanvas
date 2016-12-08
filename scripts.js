@@ -92,10 +92,10 @@ function drawScore(){
 	canvas.font = "20px Verdana";
 	if(score > highscore){
 		localStorage.setItem("highscore", score);
-		canvas.textAlign = "left"
+		canvas.textAlign = "right";
 		canvas.fillText("High Score!!!: " + score, 480, 20);
 	}
-	canvas.textAlign = "right";
+	canvas.textAlign = "left"
 	canvas.fillText("Score: " + score, 10, 20);
 	canvas.restore();
 }
