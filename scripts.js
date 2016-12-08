@@ -92,10 +92,12 @@ function drawScore(){
 	canvas.font = "20px Verdana";
 	if(score > highscore){
 		localStorage.setItem("highscore", score);
-		canvas.fillText("High Score!!!: " + score, 420, 20);
+		canvas.textAlign = "left"
+		canvas.fillText("High Score!!!: " + score, 480, 20);
 	}
-		canvas.fillText("Score: " + score, 10, 20);
-		canvas.restore();
+	canvas.textAlign = "right";
+	canvas.fillText("Score: " + score, 10, 20);
+	canvas.restore();
 }
 
 function collides(a, b){
