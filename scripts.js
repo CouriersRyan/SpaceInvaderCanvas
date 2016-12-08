@@ -1,7 +1,8 @@
 var CANVAS_WIDTH = 480;
 var CANVAS_HEIGHT = 320;
 var score = 0;
-
+var highscore = localStorage.getItem("highscore");
+e
 var canvasElement = $("<canvas width ='" + CANVAS_WIDTH + "' height='" + CANVAS_HEIGHT +"'></canvas>");
 var canvas = canvasElement.get(0).getContext("2d");
 canvasElement.appendTo('body');
@@ -87,8 +88,13 @@ function draw(){
 
 function drawScore(){
 	canvas.font = "20px Verdana";
-	canvas.fillText(score, 10, 20);
-	canvas.restore();
+	if(score > highscore && !player.active){
+		localStorage.setItem("highscore", score);
+		canvas.fillText("High Score!!!: " + score, 10, 20);
+	}else{
+		canvas.fillText("Score: " + score, 10, 20);
+		canvas.restore();
+	}
 }
 
 function collides(a, b){
